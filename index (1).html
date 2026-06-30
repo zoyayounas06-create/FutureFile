@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FutureFile — Student Achievement & Future Tracker</title>
+<meta name="description" content="Track your awards, extracurriculars, volunteer hours, projects, goals, and university applications — all in one beautiful dashboard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS ============================= */
+:root{
+  --bg:#FAFAFC;
+  --bg-soft:#F2F2F8;
+  --surface:#FFFFFF;
+  --surface-2:#F7F7FC;
+  --border:#ECEDF3;
+  --text:#15161F;
+  --text-soft:#5B5D6E;
+  --text-faint:#9496A8;
+  --blue:#4F7DF9;
+  --purple:#8B5CF6;
+  --grad: linear-gradient(135deg,#4F7DF9 0%,#8B5CF6 100%);
+  --grad-soft: linear-gradient(135deg, rgba(79,125,249,.10) 0%, rgba(139,92,246,.10) 100%);
+  --success:#1EA672;
+  --warning:#E08F1B;
+  --danger:#E0473F;
+  --shadow-sm: 0 1px 2px rgba(20,21,40,.04), 0 1px 1px rgba(20,21,40,.03);
+  --shadow-md: 0 8px 24px rgba(20,21,40,.08);
+  --shadow-lg: 0 24px 60px rgba(20,21,40,.14);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --sidebar-w: 244px;
+}
+html.dark{
+  --bg:#0B0B14;
+  --bg-soft:#101018;
+  --surface:#15161F;
+  --surface-2:#191A24;
+  --border:#262737;
+  --text:#F2F2F8;
+  --text-soft:#A8AABC;
+  --text-faint:#6C6E80;
+  --grad-soft: linear-gradient(135deg, rgba(79,125,249,.14) 0%, rgba(139,92,246,.14) 100%);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.35);
+  --shadow-lg: 0 24px 60px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  transition:background .25s ease,color .25s ease;
+}
+h1,h2,h3,h4{
+  font-family:'Poppins',sans-serif;
+  margin:0;
+  letter-spacing:-0.02em;
+}
+p{margin:0;color:var(--text-soft);}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+ul{list-style:none;margin:0;padding:0;}
+input,select,textarea{font-family:inherit;}
+::selection{background:rgba(139,92,246,.25);}
+.hidden{display:none !important;}
+.gradient-text{
+  background:var(--grad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.container{max-width:1180px;margin:0 auto;padding:0 32px;}
+@media(max-width:720px){.container{padding:0 20px;}}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 24px;border-radius:999px;border:none;font-weight:600;font-size:14.5px;
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+  white-space:nowrap;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 8px 20px rgba(124,58,237,.28);}
+.btn-primary:hover{box-shadow:0 10px 26px rgba(124,58,237,.38);transform:translateY(-1px);}
+.btn-ghost{background:var(--surface);color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--purple);}
+.btn-sm{padding:8px 14px;font-size:13px;border-radius:10px;}
+.btn-icon{width:38px;height:38px;padding:0;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;color:var(--text-soft);}
+.btn-icon:hover{color:var(--text);border-color:var(--purple);}
+.btn-danger-text{background:none;border:none;color:var(--danger);font-weight:600;font-size:13px;padding:8px 10px;}
+
+/* ============================= LANDING ============================= */
+.nav{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:blur(14px);
+  background:color-mix(in srgb, var(--bg) 78%, transparent);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Poppins';font-weight:700;font-size:19px;}
+.logo-mark{width:30px;height:30px;border-radius:9px;background:var(--grad);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;}
+.nav-links{display:flex;gap:34px;align-items:center;}
+.nav-links a{color:var(--text-soft);font-weight:500;font-size:14.5px;transition:color .15s;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{display:flex;gap:10px;align-items:center;}
+.nav-toggle{display:none;}
+@media(max-width:860px){
+  .nav-links{display:none;}
+}
+
+.hero{padding:96px 0 64px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;}
+@media(max-width:980px){.hero{grid-template-columns:1fr;padding:56px 0 40px;}}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+  background:var(--grad-soft);color:var(--purple);font-weight:600;font-size:12.5px;margin-bottom:22px;
+  border:1px solid rgba(139,92,246,.18);
+}
+.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.06;font-weight:700;}
+.hero p.lead{margin-top:22px;font-size:18px;line-height:1.6;max-width:480px;}
+.hero-actions{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;}
+
+/* Dashboard preview mockup */
+.preview-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);padding:22px;position:relative;overflow:hidden;
+}
+.preview-card::before{
+  content:"";position:absolute;inset:0;background:var(--grad);opacity:.04;
+}
+.preview-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.preview-dots{display:flex;gap:6px;}
+.preview-dots span{width:9px;height:9px;border-radius:50%;background:var(--border);}
+.preview-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.preview-stat{background:var(--surface-2);border-radius:12px;padding:12px;border:1px solid var(--border);}
+.preview-stat b{display:block;font-family:'Poppins';font-size:20px;}
+.preview-stat span{font-size:11px;color:var(--text-faint);}
+.preview-chart{height:96px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:flex-end;gap:5px;padding:12px;margin-bottom:14px;}
+.preview-chart i{flex:1;border-radius:4px 4px 0 0;background:var(--grad);opacity:.85;}
+.preview-list-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border);}
+.preview-list-row:first-child{border-top:none;}
+.preview-pip{width:8px;height:8px;border-radius:50%;background:var(--purple);flex-shrink:0;}
+.preview-list-row span{font-size:12.5px;color:var(--text-soft);}
+.preview-list-row b{font-size:12.5px;margin-left:auto;color:var(--text-faint);font-weight:500;}
+
+.section{padding:72px 0;}
+.section-head{max-width:560px;margin-bottom:44px;}
+.section-head .eyebrow{margin-bottom:14px;}
+.section-head h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;}
+.section-head p{margin-top:12px;font-size:16px;line-height:1.6;}
+
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+@media(max-width:900px){.features-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:620px){.features-grid{grid-template-columns:1fr;}}
+.feature-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:26px;transition:transform .2s ease, box-shadow .2s ease, border-color .2s;
+}
+.feature-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:rgba(139,92,246,.3);}
+.feature-icon{
+  width:42px;height:42px;border-radius:12px;background:var(--grad-soft);
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:19px;
+}
+.feature-card h3{font-size:16.5px;font-weight:600;margin-bottom:8px;}
+.feature-card p{font-size:13.8px;line-height:1.55;}
+
+.cta-band{
+  background:var(--grad);border-radius:var(--radius-lg);padding:54px 48px;text-align:center;color:#fff;
+  position:relative;overflow:hidden;
+}
+.cta-band h2{font-size:clamp(24px,3vw,34px);color:#fff;}
+.cta-band p{color:rgba(255,255,255,.85);margin-top:10px;font-size:15.5px;}
+.cta-band .hero-actions{justify-content:center;margin-top:26px;}
+.cta-band .btn-ghost{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff;}
+.cta-band .btn-primary{background:#fff;color:var(--purple);box-shadow:none;}
+
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+@media(max-width:780px){.contact-wrap{grid-template-columns:1fr;}}
+.contact-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:34px;}
+.contact-card p.lead{font-size:15.5px;line-height:1.6;margin-bottom:18px;color:var(--text-soft);}
+.contact-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--border);}
+.contact-row:first-of-type{border-top:none;}
+.contact-row .ic{width:36px;height:36px;border-radius:10px;background:var(--grad-soft);display:flex;align-items:center;justify-content:center;color:var(--purple);font-size:15px;flex-shrink:0;}
+.contact-row a{font-weight:600;font-size:14.5px;}
+.contact-row a:hover{color:var(--purple);}
+
+footer{border-top:1px solid var(--border);padding:36px 0;}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.footer-inner p{font-size:13px;color:var(--text-faint);}
+.footer-inner a{font-size:13px;color:var(--text-faint);}
+.footer-inner a:hover{color:var(--purple);}
+
+/* ============================= ONBOARDING MODAL ============================= */
+.overlay{
+  position:fixed;inset:0;background:rgba(10,10,18,.5);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;
+}
+.modal{
+  background:var(--surface);border-radius:var(--radius-lg);padding:32px;width:100%;max-width:440px;
+  box-shadow:var(--shadow-lg);border:1px solid var(--border);
+  animation:pop .25s ease;
+}
+.modal.modal-lg{max-width:560px;}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:none;}}
+.modal h3{font-size:20px;margin-bottom:6px;}
+.modal p.sub{font-size:13.5px;margin-bottom:22px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--text-soft);margin-bottom:6px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);
+  background:var(--surface-2);color:var(--text);font-size:14px;outline:none;transition:border-color .15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--purple);}
+.field textarea{resize:vertical;min-height:70px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-actions{display:flex;gap:10px;margin-top:8px;}
+.modal-actions .btn{flex:1;}
+.modal-close{position:absolute;top:18px;right:18px;background:none;border:none;color:var(--text-faint);font-size:18px;width:30px;height:30px;border-radius:8px;}
+.modal-close:hover{background:var(--surface-2);color:var(--text);}
+.modal-wrap{position:relative;}
+
+/* ============================= APP SHELL ============================= */
+#app{display:flex;min-height:100vh;}
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
+  padding:22px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:6px 8px 22px;font-family:'Poppins';font-weight:700;font-size:17px;}
+.side-nav{flex:1;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.side-link{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;
+  color:var(--text-soft);font-size:14px;font-weight:500;transition:background .15s,color .15s;
+}
+.side-link .ic{width:18px;text-align:center;font-size:15px;}
+.side-link:hover{background:var(--surface-2);color:var(--text);}
+.side-link.active{background:var(--grad-soft);color:var(--purple);font-weight:600;}
+.side-foot{border-top:1px solid var(--border);padding-top:14px;margin-top:10px;display:flex;align-items:center;gap:10px;}
+.avatar{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+.side-foot-name{font-size:13.5px;font-weight:600;line-height:1.2;}
+.side-foot-name small{display:block;font-weight:400;color:var(--text-faint);font-size:11.5px;}
+.mobile-bar{display:none;}
+
+.main{flex:1;min-width:0;padding:28px 36px 60px;}
+@media(max-width:920px){
+  .sidebar{position:fixed;left:-260px;z-index:120;transition:left .25s ease;box-shadow:var(--shadow-lg);}
+  .sidebar.open{left:0;}
+  .main{padding:84px 18px 60px;}
+  .mobile-bar{
+    display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;height:62px;
+    background:color-mix(in srgb, var(--bg) 85%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
+    padding:0 16px;z-index:110;
+  }
+}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:26px;flex-wrap:wrap;gap:14px;}
+.page-head h1{font-size:25px;}
+.page-head p.sub{font-size:13.5px;margin-top:4px;}
+.page-actions{display:flex;gap:10px;}
+
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+@media(max-width:1080px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:540px){.stat-grid{grid-template-columns:1fr 1fr;}}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;
+  position:relative;overflow:hidden;
+}
+.stat-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);}
+.stat-card .ic{width:32px;height:32px;border-radius:9px;background:var(--grad-soft);display:flex;align-items:center;justify-content:center;color:var(--purple);font-size:14px;margin-bottom:12px;}
+.stat-card b{display:block;font-family:'Poppins';font-size:24px;}
+.stat-card span{font-size:12px;color:var(--text-faint);}
+
+.panel-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:24px;}
+@media(max-width:920px){.panel-grid{grid-template-columns:1fr;}}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:22px;}
+.panel h3{font-size:15.5px;margin-bottom:18px;}
+.bar-chart{display:flex;align-items:flex-end;gap:10px;height:150px;}
+.bar-chart .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end;}
+.bar-chart .bar{width:100%;border-radius:6px 6px 2px 2px;background:var(--grad);min-height:4px;transition:height .5s ease;}
+.bar-chart .bar-label{font-size:10.5px;color:var(--text-faint);}
+.donut-row{display:flex;align-items:center;gap:20px;}
+.legend{display:flex;flex-direction:column;gap:10px;flex:1;}
+.legend-item{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--text-soft);}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.legend-item b{margin-left:auto;color:var(--text);}
+
+.card-list{display:flex;flex-direction:column;gap:10px;}
+.item-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:16px 18px;display:flex;align-items:center;gap:14px;transition:border-color .15s, box-shadow .15s;
+}
+.item-card:hover{border-color:rgba(139,92,246,.3);box-shadow:var(--shadow-sm);}
+.item-ic{width:40px;height:40px;border-radius:11px;background:var(--grad-soft);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.item-body{flex:1;min-width:0;}
+.item-body h4{font-size:14.5px;font-weight:600;margin-bottom:3px;}
+.item-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.item-meta span{font-size:11.5px;color:var(--text-faint);}
+.tag{display:inline-block;padding:3px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);font-size:10.5px;color:var(--text-soft);}
+.badge{padding:4px 11px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;}
+.badge-blue{background:rgba(79,125,249,.12);color:var(--blue);}
+.badge-purple{background:rgba(139,92,246,.12);color:var(--purple);}
+.badge-green{background:rgba(30,166,114,.12);color:var(--success);}
+.badge-amber{background:rgba(224,143,27,.12);color:var(--warning);}
+.badge-red{background:rgba(224,71,63,.12);color:var(--danger);}
+.badge-gray{background:var(--surface-2);color:var(--text-faint);border:1px solid var(--border);}
+.item-actions{display:flex;gap:6px;flex-shrink:0;}
+.progress-track{width:100%;height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:6px;}
+.progress-fill{height:100%;background:var(--grad);border-radius:99px;}
+
+.toolbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.toolbar select,.toolbar input{
+  padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;
+}
+.empty-state{
+  text-align:center;padding:60px 20px;background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-md);
+}
+.empty-state .ic{font-size:34px;margin-bottom:12px;}
+.empty-state h4{font-size:15.5px;margin-bottom:6px;}
+.empty-state p{font-size:13px;max-width:300px;margin:0 auto 18px;}
+
+/* Timeline */
+.timeline{position:relative;padding-left:32px;}
+.timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--grad);border-radius:2px;}
+.timeline-year{font-family:'Poppins';font-size:22px;font-weight:700;margin:34px 0 16px;position:relative;}
+.timeline-year:first-child{margin-top:0;}
+.timeline-year::before{content:"";position:absolute;left:-32px;top:6px;width:20px;height:20px;border-radius:50%;background:var(--grad);border:4px solid var(--bg);}
+.timeline-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;
+  margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;position:relative;
+}
+.timeline-item::before{content:"";position:absolute;left:-27px;top:18px;width:9px;height:9px;border-radius:50%;background:var(--purple);}
+.timeline-item .ic{font-size:15px;color:var(--purple);margin-top:2px;}
+.timeline-item h4{font-size:14px;font-weight:600;}
+.timeline-item span{font-size:11.5px;color:var(--text-faint);}
+
+/* Resume */
+.resume-wrap{display:grid;grid-template-columns:240px 1fr;gap:20px;}
+@media(max-width:880px){.resume-wrap{grid-template-columns:1fr;}}
+.resume-paper{
+  background:#fff;color:#1a1a1a;border-radius:var(--radius-md);box-shadow:var(--shadow-lg);padding:46px 44px;
+  font-family:'Inter',sans-serif;min-height:600px;
+}
+.resume-paper h1{color:#1a1a1a;font-size:26px;}
+.resume-paper .r-role{color:#6b6b78;font-size:13px;margin-top:4px;}
+.resume-paper .r-contact{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:#6b6b78;}
+.r-section{margin-top:24px;}
+.r-section h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7c3aed;border-bottom:2px solid #ece9fb;padding-bottom:6px;margin-bottom:12px;}
+.r-entry{margin-bottom:12px;}
+.r-entry-top{display:flex;justify-content:space-between;font-size:13.5px;font-weight:600;color:#1a1a1a;}
+.r-entry-top span{font-weight:400;color:#8a8a96;font-size:11.5px;}
+.r-entry p{color:#4a4a55;font-size:12.5px;line-height:1.5;margin-top:3px;}
+.resume-paper.classic{font-family:Georgia,serif;}
+.resume-paper.classic h3{color:#1a1a1a;border-bottom:1px solid #ddd;font-family:Georgia,serif;letter-spacing:.04em;}
+.resume-paper.classic .r-section h3{font-style:italic;}
+@media print{
+  body *{visibility:hidden;}
+  #print-area, #print-area *{visibility:visible;}
+  #print-area{position:absolute;left:0;top:0;width:100%;}
+  .resume-paper{box-shadow:none;border-radius:0;}
+}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--text);color:var(--bg);padding:13px 22px;border-radius:12px;font-size:13.5px;font-weight:500;
+  box-shadow:var(--shadow-lg);opacity:0;transition:opacity .25s ease, transform .25s ease;z-index:300;pointer-events:none;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.toggle{
+  width:44px;height:26px;border-radius:99px;background:var(--surface-2);border:1px solid var(--border);position:relative;flex-shrink:0;
+}
+.toggle::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:var(--text-faint);top:2px;left:2px;transition:all .2s ease;}
+.toggle.on{background:var(--grad);border-color:transparent;}
+.toggle.on::after{left:20px;background:#fff;}
+
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-top:1px solid var(--border);}
+.settings-row:first-child{border-top:none;}
+.settings-row h4{font-size:14px;font-weight:600;margin-bottom:3px;}
+.settings-row p{font-size:12.5px;}
+
+@media(max-width:600px){
+  .field-row{grid-template-columns:1fr;}
+  .resume-paper{padding:28px 22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================= LANDING PAGE ============================= -->
+<div id="landing">
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="logo"><span class="logo-mark">FF</span> FutureFile</div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#timeline-preview">Timeline</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="nav-cta">
+        <button class="btn btn-ghost btn-sm" onclick="openApp()">Log in</button>
+        <button class="btn btn-primary btn-sm" onclick="openOnboarding()">Get Started</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="container hero">
+    <div>
+      <div class="eyebrow">✦ Built for Grades 9–12</div>
+      <h1>Never Forget an<br>Achievement <span class="gradient-text">Again.</span></h1>
+      <p class="lead">Track your awards, extracurriculars, volunteer hours, projects, goals, and university applications — all in one beautiful dashboard.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="openOnboarding()">Get Started</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Learn More</button>
+      </div>
+    </div>
+    <div class="preview-card">
+      <div class="preview-top">
+        <div class="preview-dots"><span></span><span></span><span></span></div>
+        <span class="tag">Live preview</span>
+      </div>
+      <div class="preview-stats">
+        <div class="preview-stat"><b>32</b><span>Achievements</span></div>
+        <div class="preview-stat"><b>146</b><span>Volunteer hrs</span></div>
+        <div class="preview-stat"><b>6</b><span>Universities</span></div>
+      </div>
+      <div class="preview-chart">
+        <i style="height:35%"></i><i style="height:55%"></i><i style="height:40%"></i>
+        <i style="height:70%"></i><i style="height:50%"></i><i style="height:85%"></i><i style="height:65%"></i>
+      </div>
+      <div class="preview-list-row"><span class="preview-pip"></span><span>Regional Science Fair — 1st Place</span><b>2d ago</b></div>
+      <div class="preview-list-row"><span class="preview-pip"></span><span>Beach cleanup — 4 hrs logged</span><b>5d ago</b></div>
+      <div class="preview-list-row"><span class="preview-pip"></span><span>UofT application — Essay submitted</span><b>1w ago</b></div>
+    </div>
+  </header>
+
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Everything in one place</div>
+        <h2>One portfolio for your whole high school journey</h2>
+        <p>Stop digging through old emails and group chats. Log everything once, and let FutureFile turn it into applications, resumes, and a timeline you're proud of.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">🏆</div><h3>Achievements</h3><p>Store awards, certificates, competitions, and recognitions.</p></div>
+        <div class="feature-card"><div class="feature-icon">🎽</div><h3>Extracurriculars</h3><p>Track clubs, sports, music, leadership, and school involvement.</p></div>
+        <div class="feature-card"><div class="feature-icon">🤝</div><h3>Volunteer Hours</h3><p>Record organizations, hours completed, supervisor info, and proof uploads.</p></div>
+        <div class="feature-card"><div class="feature-icon">💡</div><h3>Projects</h3><p>Save coding projects, research, businesses, and creative work.</p></div>
+        <div class="feature-card"><div class="feature-icon">🎯</div><h3>Goals</h3><p>Set academic and personal goals with progress tracking.</p></div>
+        <div class="feature-card"><div class="feature-icon">🎓</div><h3>University Tracker</h3><p>Track applications, deadlines, requirements, essays, and status.</p></div>
+        <div class="feature-card"><div class="feature-icon">💰</div><h3>Scholarship Tracker</h3><p>Manage scholarships, deadlines, submissions, and results.</p></div>
+        <div class="feature-card"><div class="feature-icon">📄</div><h3>Resume Builder</h3><p>Automatically generate a professional resume using stored data.</p></div>
+        <div class="feature-card" id="timeline-preview"><div class="feature-icon">🗓️</div><h3>Timeline</h3><p>A visual chronological timeline of all milestones from Grade 9 onward.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Start building your portfolio today.</h2>
+        <p>It takes two minutes to set up — and your future self will thank you.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="openOnboarding()">Get Started Free</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Ask a question</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <div class="container contact-wrap">
+      <div>
+        <div class="eyebrow">Get in touch</div>
+        <h2>Contact</h2>
+        <p style="margin-top:12px;font-size:15.5px;line-height:1.6;">Have questions, feedback, or suggestions? I'd love to hear from you.</p>
+      </div>
+      <div class="contact-card">
+        <p class="lead">Reach out any time — I read every message personally.</p>
+        <div class="contact-row"><span class="ic">👤</span><div><div style="font-size:12px;color:var(--text-faint);">Name</div><div style="font-weight:600;font-size:14.5px;">Zoya Younas</div></div></div>
+        <div class="contact-row"><span class="ic">✉️</span><div><div style="font-size:12px;color:var(--text-faint);">Email</div><a href="mailto:zoyayounas06@gmail.com">zoyayounas06@gmail.com</a></div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p>FutureFile © 2026 • Built by Zoya Younas</p>
+      <a href="mailto:zoyayounas06@gmail.com">📧 zoyayounas06@gmail.com</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ============================= ONBOARDING MODAL ============================= -->
+<div class="overlay hidden" id="onboardingOverlay">
+  <div class="modal modal-wrap">
+    <button class="modal-close" onclick="closeOnboarding()">✕</button>
+    <h3>Welcome to FutureFile</h3>
+    <p class="sub">Tell us a little about you to set up your dashboard. Everything is saved privately in this browser.</p>
+    <div class="field">
+      <label>Your name</label>
+      <input id="onboardName" type="text" placeholder="e.g. Zoya Younas">
+    </div>
+    <div class="field">
+      <label>Email (optional)</label>
+      <input id="onboardEmail" type="email" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label>Current grade</label>
+      <select id="onboardGrade">
+        <option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="finishOnboarding()">Create my portfolio</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= APP SHELL ============================= -->
+<div id="app" class="hidden">
+  <div class="mobile-bar">
+    <button class="btn-icon" onclick="toggleSidebar()">☰</button>
+    <div class="logo" style="font-size:15px;"><span class="logo-mark" style="width:24px;height:24px;font-size:12px;">FF</span> FutureFile</div>
+    <button class="btn-icon" onclick="toggleSidebar()">✕</button>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><span class="logo-mark">FF</span> FutureFile</div>
+    <nav class="side-nav" id="sideNav">
+      <a class="side-link" data-page="dashboard"><span class="ic">🏠</span>Dashboard</a>
+      <a class="side-link" data-page="achievements"><span class="ic">🏆</span>Achievements</a>
+      <a class="side-link" data-page="extracurriculars"><span class="ic">🎽</span>Extracurriculars</a>
+      <a class="side-link" data-page="volunteer"><span class="ic">🤝</span>Volunteer Hours</a>
+      <a class="side-link" data-page="projects"><span class="ic">💡</span>Projects</a>
+      <a class="side-link" data-page="goals"><span class="ic">🎯</span>Goals</a>
+      <a class="side-link" data-page="universities"><span class="ic">🎓</span>University Tracker</a>
+      <a class="side-link" data-page="scholarships"><span class="ic">💰</span>Scholarship Tracker</a>
+      <a class="side-link" data-page="resume"><span class="ic">📄</span>Resume Builder</a>
+      <a class="side-link" data-page="timeline"><span class="ic">🗓️</span>Timeline</a>
+      <a class="side-link" data-page="settings"><span class="ic">⚙️</span>Settings</a>
+      <a class="side-link" data-page="contact"><span class="ic">✉️</span>Contact</a>
+    </nav>
+    <div class="side-foot">
+      <div class="avatar" id="sideAvatar">Z</div>
+      <div class="side-foot-name"><span id="sideName">Student</span><small id="sideGrade">Grade 9</small></div>
+      <button class="btn-icon" style="margin-left:auto;" title="Log out" onclick="logOut()">⎋</button>
+    </div>
+  </aside>
+
+  <main class="main" id="main"><!-- pages injected by JS --></main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   FUTUREFILE — APP LOGIC
+   All data is stored locally in this browser via localStorage.
+   ============================================================ */
+const STORE_KEY = "futurefile_data_v1";
+
+const ICONS = {
+  achievements:"🏆", extracurriculars:"🎽", volunteer:"🤝", projects:"💡",
+  goals:"🎯", universities:"🎓", scholarships:"💰"
+};
+
+function defaultData(){
+  return {
+    profile:{ name:"", email:"", grade:"Grade 9", photo:"", theme:"light" },
+    achievements:[], extracurriculars:[], volunteer:[], projects:[], goals:[],
+    universities:[], scholarships:[]
+  };
+}
+
+let DATA = loadData();
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultData(), parsed);
+  }catch(e){ return null; }
+}
+function saveData(){
+  localStorage.setItem(STORE_KEY, JSON.stringify(DATA));
+}
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ---------- THEME ---------- */
+function applyTheme(){
+  const dark = DATA && DATA.profile.theme === 'dark';
+  document.documentElement.classList.toggle('dark', dark);
+}
+function toggleTheme(){
+  DATA.profile.theme = DATA.profile.theme === 'dark' ? 'light' : 'dark';
+  saveData(); applyTheme(); renderPage(currentPage);
+}
+
+/* ---------- ONBOARDING / AUTH (local only, no backend) ---------- */
+function openOnboarding(){
+  document.getElementById('onboardingOverlay').classList.remove('hidden');
+}
+function closeOnboarding(){
+  document.getElementById('onboardingOverlay').classList.add('hidden');
+}
+function finishOnboarding(){
+  const name = document.getElementById('onboardName').value.trim();
+  if(!name){ toast("Please enter your name"); return; }
+  if(!DATA) DATA = defaultData();
+  DATA.profile.name = name;
+  DATA.profile.email = document.getElementById('onboardEmail').value.trim();
+  DATA.profile.grade = document.getElementById('onboardGrade').value;
+  saveData();
+  closeOnboarding();
+  openApp();
+  toast("Welcome to FutureFile, "+name.split(' ')[0]+"!");
+}
+function openApp(){
+  if(!DATA || !DATA.profile.name){ openOnboarding(); return; }
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  applyTheme();
+  updateSideProfile();
+  goTo('dashboard');
+}
+function logOut(){
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('landing').classList.remove('hidden');
+}
+function updateSideProfile(){
+  document.getElementById('sideName').textContent = DATA.profile.name || "Student";
+  document.getElementById('sideGrade').textContent = DATA.profile.grade || "Grade 9";
+  const av = document.getElementById('sideAvatar');
+  if(DATA.profile.photo){ av.innerHTML = '<img src="'+DATA.profile.photo+'">'; }
+  else{ av.textContent = (DATA.profile.name||"S").trim()[0].toUpperCase(); }
+}
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+
+/* ---------- NAV ---------- */
+let currentPage = 'dashboard';
+document.getElementById('sideNav').addEventListener('click', e=>{
+  const link = e.target.closest('.side-link');
+  if(!link) return;
+  goTo(link.dataset.page);
+  document.getElementById('sidebar').classList.remove('open');
+});
+function goTo(page){
+  currentPage = page;
+  document.querySelectorAll('.side-link').forEach(l=>l.classList.toggle('active', l.dataset.page===page));
+  renderPage(page);
+  document.getElementById('main').scrollTo?.(0,0);
+  window.scrollTo(0,0);
+}
+
+/* ---------- HELPERS ---------- */
+function fmtDate(d){
+  if(!d) return "—";
+  const dt = new Date(d+"T00:00:00");
+  if(isNaN(dt)) return d;
+  return dt.toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'});
+}
+function yearOf(d){
+  if(!d) return new Date().getFullYear();
+  const dt = new Date(d+"T00:00:00");
+  return isNaN(dt) ? new Date().getFullYear() : dt.getFullYear();
+}
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function totalVolunteerHours(){
+  return DATA.volunteer.reduce((sum,v)=>sum + (parseFloat(v.hours)||0), 0);
+}
+
+/* ============================================================
+   PAGE RENDERER
+   ============================================================ */
+function renderPage(page){
+  const main = document.getElementById('main');
+  const renderers = {
+    dashboard: pageDashboard,
+    achievements: ()=>pageCollection('achievements'),
+    extracurriculars: ()=>pageCollection('extracurriculars'),
+    volunteer: pageVolunteer,
+    projects: pageProjects,
+    goals: pageGoals,
+    universities: pageUniversities,
+    scholarships: pageScholarships,
+    resume: pageResume,
+    timeline: pageTimeline,
+    settings: pageSettings,
+    contact: pageContactApp
+  };
+  main.innerHTML = (renderers[page] || pageDashboard)();
+  if(page==='dashboard') drawDashboardCharts();
+}
+
+/* ---------- DASHBOARD ---------- */
+function pageDashboard(){
+  const stats = [
+    {key:'achievements', label:'Achievements', ic:'🏆'},
+    {key:'volunteer', label:'Volunteer Hours', ic:'🤝', isHours:true},
+    {key:'extracurriculars', label:'Clubs & Activities', ic:'🎽'},
+    {key:'projects', label:'Projects', ic:'💡'},
+    {key:'goals', label:'Active Goals', ic:'🎯', filter:g=>g.status!=='Completed'},
+    {key:'universities', label:'University Apps', ic:'🎓'},
+    {key:'scholarships', label:'Scholarships', ic:'💰'},
+    {key:'awards', label:'Awards Won', ic:'⭐', custom:true},
+  ];
+
+  const statCards = stats.map(s=>{
+    let val;
+    if(s.isHours) val = totalVolunteerHours().toFixed(1);
+    else if(s.custom) val = DATA.achievements.filter(a=>(a.category||'').toLowerCase().includes('award')||(a.category||'').toLowerCase().includes('competition')).length;
+    else if(s.filter) val = DATA[s.key].filter(s.filter).length;
+    else val = (DATA[s.key]||[]).length;
+    return `<div class="stat-card"><div class="ic">${s.ic}</div><b>${val}</b><span>${s.label}</span></div>`;
+  }).join('');
+
+  const recent = [
+    ...DATA.achievements.map(a=>({...a, type:'Achievement', ic:'🏆', date:a.date})),
+    ...DATA.volunteer.map(v=>({...v, title:v.organization, type:'Volunteer', ic:'🤝', date:v.date})),
+    ...DATA.projects.map(p=>({...p, type:'Project', ic:'💡', date:p.date})),
+  ].sort((a,b)=> new Date(b.date||0) - new Date(a.date||0)).slice(0,5);
+
+  const recentHtml = recent.length ? recent.map(r=>`
+    <div class="item-card">
+      <div class="item-ic">${r.ic}</div>
+      <div class="item-body">
+        <h4>${escapeHtml(r.title||'Untitled')}</h4>
+        <div class="item-meta"><span class="tag">${r.type}</span><span>${fmtDate(r.date)}</span></div>
+      </div>
+    </div>`).join('') : emptyState('📭','Nothing logged yet','Start by adding your first achievement, project, or volunteer entry.');
+
+  return `
+  <div class="page-head">
+    <div><h1>Welcome back${DATA.profile.name? ', '+escapeHtml(DATA.profile.name.split(' ')[0]):''} 👋</h1><p class="sub">Here's a snapshot of your whole portfolio.</p></div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="openQuickAdd('achievements')">+ Achievement</button>
+      <button class="btn btn-ghost btn-sm" onclick="openQuickAdd('volunteer')">+ Volunteer Hours</button>
+      <button class="btn btn-primary btn-sm" onclick="openQuickAdd('goals')">+ Goal</button>
+    </div>
+  </div>
+  <div class="stat-grid">${statCards}</div>
+  <div class="panel-grid">
+    <div class="panel">
+      <h3>Growth over time</h3>
+      <div class="bar-chart" id="growthChart"></div>
+    </div>
+    <div class="panel">
+      <h3>Activity by category</h3>
+      <div class="donut-row">
+        <svg width="110" height="110" viewBox="0 0 110 110" id="donutSvg"></svg>
+        <div class="legend" id="donutLegend"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Recent activity</h3>
+    <div class="card-list">${recentHtml}</div>
+  </div>`;
+}
+
+function drawDashboardCharts(){
+  // Growth over time: count of all logged items per month (last 7 months)
+  const months = [];
+  const now = new Date();
+  for(let i=6;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    months.push({label:d.toLocaleDateString('en-US',{month:'short'}), key:d.getFullYear()+'-'+d.getMonth(), count:0});
+  }
+  const allItems = [...DATA.achievements,...DATA.extracurriculars,...DATA.volunteer.map(v=>({date:v.date})),...DATA.projects,...DATA.goals];
+  allItems.forEach(item=>{
+    if(!item.date) return;
+    const d = new Date(item.date+"T00:00:00");
+    if(isNaN(d)) return;
+    const key = d.getFullYear()+'-'+d.getMonth();
+    const m = months.find(m=>m.key===key);
+    if(m) m.count++;
+  });
+  const max = Math.max(1, ...months.map(m=>m.count));
+  const growthEl = document.getElementById('growthChart');
+  if(growthEl){
+    growthEl.innerHTML = months.map(m=>`
+      <div class="bar-wrap">
+        <div class="bar" style="height:${Math.max(6,(m.count/max)*100)}%"></div>
+        <div class="bar-label">${m.label}</div>
+      </div>`).join('');
+  }
+
+  // Donut: category breakdown
+  const cats = [
+    {label:'Achievements', count:DATA.achievements.length, color:'#4F7DF9'},
+    {label:'Extracurriculars', count:DATA.extracurriculars.length, color:'#8B5CF6'},
+    {label:'Volunteer', count:DATA.volunteer.length, color:'#1EA672'},
+    {label:'Projects', count:DATA.projects.length, color:'#E08F1B'},
+    {label:'Goals', count:DATA.goals.length, color:'#E0473F'},
+  ];
+  const total = Math.max(1, cats.reduce((s,c)=>s+c.count,0));
+  let offset = 0;
+  const r = 45, cx=55, cy=55, circ = 2*Math.PI*r;
+  const svg = document.getElementById('donutSvg');
+  if(svg){
+    let circles = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="14"/>`;
+    cats.forEach(c=>{
+      const frac = c.count/total;
+      const len = frac*circ;
+      circles += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.color}" stroke-width="14"
+        stroke-dasharray="${len} ${circ-len}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt"/>`;
+      offset += len;
+    });
+    svg.innerHTML = circles;
+    document.getElementById('donutLegend').innerHTML = cats.map(c=>`
+      <div class="legend-item"><span class="legend-dot" style="background:${c.color}"></span>${c.label}<b>${c.count}</b></div>`).join('');
+  }
+}
+
+function emptyState(ic,title,sub){
+  return `<div class="empty-state"><div class="ic">${ic}</div><h4>${title}</h4><p>${sub}</p></div>`;
+}
+
+/* ============================================================
+   GENERIC COLLECTION PAGES (Achievements / Extracurriculars)
+   ============================================================ */
+const FIELD_DEFS = {
+  achievements:{
+    title:"Achievements", icon:"🏆", singular:"Achievement",
+    categories:["Award","Competition","Certificate","Recognition","Academic","Other"],
+    fields:[
+      {key:'title', label:'Title', type:'text', required:true},
+      {key:'description', label:'Description', type:'textarea'},
+      {key:'category', label:'Category', type:'select', options:["Award","Competition","Certificate","Recognition","Academic","Other"]},
+      {key:'date', label:'Date', type:'date'},
+      {key:'organization', label:'Organization', type:'text'},
+      {key:'tags', label:'Tags (comma separated)', type:'text'},
+      {key:'image', label:'Certificate / Image URL', type:'text'},
+    ]
+  },
+  extracurriculars:{
+    title:"Extracurriculars", icon:"🎽", singular:"Activity",
+    categories:["Club","Sport","Music","Leadership","Volunteering Group","Other"],
+    fields:[
+      {key:'title', label:'Activity name', type:'text', required:true},
+      {key:'role', label:'Role / Position', type:'text'},
+      {key:'category', label:'Category', type:'select', options:["Club","Sport","Music","Leadership","Other"]},
+      {key:'date', label:'Date joined', type:'date'},
+      {key:'description', label:'Description', type:'textarea'},
+      {key:'tags', label:'Tags (comma separated)', type:'text'},
+    ]
+  }
+};
+
+function pageCollection(type){
+  const def = FIELD_DEFS[type];
+  const items = DATA[type] || [];
+  return `
+  <div class="page-head">
+    <div><h1>${def.icon} ${def.title}</h1><p class="sub">${items.length} ${items.length===1?'entry':'entries'} logged</p></div>
+    <div class="page-actions"><button class="btn btn-primary btn-sm" onclick="openItemModal('${type}')">+ Add ${def.singular}</button></div>
+  </div>
+  <div class="toolbar">
+    <select onchange="filterCollection('${type}', this.value)">
+      <option value="">All categories</option>
+      ${def.categories.map(c=>`<option value="${c}">${c}</option>`).join('')}
+    </select>
+    <input type="text" placeholder="Search..." oninput="searchCollection('${type}', this.value)">
+  </div>
+  <div class="card-list" id="list-${type}">${renderCollectionList(type, items)}</div>`;
+}
+
+function renderCollectionList(type, items){
+  const def = FIELD_DEFS[type];
+  if(!items.length) return emptyState(def.icon, `No ${def.title.toLowerCase()} yet`, `Add your first ${def.singular.toLowerCase()} to start building your portfolio.`);
+  return [...items].sort((a,b)=> new Date(b.date||0)-new Date(a.date||0)).map(item=>`
+    <div class="item-card">
+      <div class="item-ic">${def.icon}</div>
+      <div class="item-body">
+        <h4>${escapeHtml(item.title)}</h4>
+        <div class="item-meta">
+          ${item.category?`<span class="badge badge-purple">${escapeHtml(item.category)}</span>`:''}
+          ${item.organization?`<span>${escapeHtml(item.organization)}</span>`:''}
+          ${item.role?`<span>${escapeHtml(item.role)}</span>`:''}
+          <span>${fmtDate(item.date)}</span>
+          ${(item.tags||'').split(',').filter(Boolean).map(t=>`<span class="tag">${escapeHtml(t.trim())}</span>`).join('')}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-icon" title="Edit" onclick="openItemModal('${type}','${item.id}')">✎</button>
+        <button class="btn-icon" title="Delete" onclick="deleteItem('${type}','${item.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function filterCollection(type, cat){
+  const items = (DATA[type]||[]).filter(i=> !cat || i.category===cat);
+  document.getElementById('list-'+type).innerHTML = renderCollectionList(type, items);
+}
+function searchCollection(type, q){
+  q = q.toLowerCase();
+  const items = (DATA[type]||[]).filter(i=> (i.title||'').toLowerCase().includes(q) || (i.description||'').toLowerCase().includes(q));
+  document.getElementById('list-'+type).innerHTML = renderCollectionList(type, items);
+}
+
+function openItemModal(type, id){
+  const def = FIELD_DEFS[type];
+  const existing = id ? DATA[type].find(i=>i.id===id) : null;
+  const formHtml = def.fields.map(f=>{
+    const val = existing ? (existing[f.key]||'') : '';
+    if(f.type==='textarea') return `<div class="field"><label>${f.label}</label><textarea data-key="${f.key}">${escapeHtml(val)}</textarea></div>`;
+    if(f.type==='select') return `<div class="field"><label>${f.label}</label><select data-key="${f.key}">${f.options.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('')}</select></div>`;
+    return `<div class="field"><label>${f.label}</label><input data-key="${f.key}" type="${f.type}" value="${escapeHtml(val)}"></div>`;
+  }).join('');
+
+  showOverlay(`
+    <div class="modal modal-lg modal-wrap">
+      <button class="modal-close" onclick="closeOverlay()">✕</button>
+      <h3>${existing?'Edit':'Add'} ${def.singular}</h3>
+      <p class="sub">Fill in the details below.</p>
+      <div id="genericForm">${formHtml}</div>
+      <div class="modal-actions">
+        ${existing?`<button class="btn btn-danger-text" onclick="deleteItem('${type}','${id}');closeOverlay();">Delete</button>`:''}
+        <button class="btn btn-primary" onclick="saveItem('${type}','${existing?existing.id:''}')">Save ${def.singular}</button>
+      </div>
+    </div>`);
+}
+function saveItem(type, id){
+  const def = FIELD_DEFS[type];
+  const form = document.getElementById('genericForm');
+  const obj = id ? DATA[type].find(i=>i.id===id) : {id:uid()};
+  let valid = true;
+  def.fields.forEach(f=>{
+    const el = form.querySelector(`[data-key="${f.key}"]`);
+    const val = el.value.trim();
+    if(f.required && !val) valid = false;
+    obj[f.key] = val;
+  });
+  if(!valid){ toast("Please fill in the required field"); return; }
+  if(!id) DATA[type].push(obj);
+  saveData();
+  closeOverlay();
+  toast(`${def.singular} saved`);
+  renderPage(currentPage);
+}
+function deleteItem(type, id){
+  DATA[type] = DATA[type].filter(i=>i.id!==id);
+  saveData();
+  toast("Deleted");
+  renderPage(currentPage);
+}
+function openQuickAdd(type){
+  if(type==='goals') openItemModal('goals');
+  else if(type==='volunteer') openVolunteerModal();
+  else openItemModal(type);
+}
+
+/* ---------- OVERLAY HELPERS ---------- */
+function showOverlay(html){
+  let ov = document.getElementById('dynOverlay');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'dynOverlay';
+    ov.className = 'overlay';
+    document.body.appendChild(ov);
+  }
+  ov.innerHTML = html;
+  ov.classList.remove('hidden');
+  ov.onclick = (e)=>{ if(e.target===ov) closeOverlay(); };
+}
+function closeOverlay(){
+  const ov = document.getElementById('dynOverlay');
+  if(ov) ov.classList.add('hidden');
+}
+
+/* ============================================================
+   VOLUNTEER HOURS
+   ============================================================ */
+function pageVolunteer(){
+  const items = DATA.volunteer;
+  const total = totalVolunteerHours();
+  return `
+  <div class="page-head">
+    <div><h1>🤝 Volunteer Hours</h1><p class="sub">${total.toFixed(1)} total hours logged across ${items.length} ${items.length===1?'entry':'entries'}</p></div>
+    <div class="page-actions"><button class="btn btn-primary btn-sm" onclick="openVolunteerModal()">+ Log Hours</button></div>
+  </div>
+  <div class="card-list" id="list-volunteer">${renderVolunteerList(items)}</div>`;
+}
+function renderVolunteerList(items){
+  if(!items.length) return emptyState('🤝','No volunteer hours yet','Log your first volunteering session to start tracking your total hours.');
+  return [...items].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).map(v=>`
+    <div class="item-card">
+      <div class="item-ic">🤝</div>
+      <div class="item-body">
+        <h4>${escapeHtml(v.organization||'Untitled')}</h4>
+        <div class="item-meta">
+          <span class="badge badge-green">${v.hours||0} hrs</span>
+          <span>${fmtDate(v.date)}</span>
+          ${v.supervisor?`<span>Supervisor: ${escapeHtml(v.supervisor)}</span>`:''}
+          ${v.proof?`<span class="tag">Proof attached</span>`:''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-icon" onclick="openVolunteerModal('${v.id}')">✎</button>
+        <button class="btn-icon" onclick="deleteItem('volunteer','${v.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function openVolunteerModal(id){
+  const existing = id ? DATA.volunteer.find(v=>v.id===id) : null;
+  const v = existing || {};
+  showOverlay(`
+  <div class="modal modal-lg modal-wrap">
+    <button class="modal-close" onclick="closeOverlay()">✕</button>
+    <h3>${existing?'Edit':'Log'} Volunteer Hours</h3>
+    <p class="sub">Record details so they're ready for verification later.</p>
+    <div class="field"><label>Organization</label><input id="vOrg" value="${escapeHtml(v.organization||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input id="vDate" type="date" value="${v.date||''}"></div>
+      <div class="field"><label>Hours completed</label><input id="vHours" type="number" min="0" step="0.5" value="${v.hours||''}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Supervisor name</label><input id="vSup" value="${escapeHtml(v.supervisor||'')}"></div>
+      <div class="field"><label>Contact info</label><input id="vContact" value="${escapeHtml(v.contact||'')}"></div>
+    </div>
+    <div class="field"><label>Verification upload (link)</label><input id="vProof" value="${escapeHtml(v.proof||'')}" placeholder="Paste a link to your proof document"></div>
+    <div class="field"><label>Notes</label><textarea id="vNotes">${escapeHtml(v.notes||'')}</textarea></div>
+    <div class="modal-actions">
+      ${existing?`<button class="btn btn-danger-text" onclick="deleteItem('volunteer','${id}');closeOverlay();">Delete</button>`:''}
+      <button class="btn btn-primary" onclick="saveVolunteer('${existing?existing.id:''}')">Save Entry</button>
+    </div>
+  </div>`);
+}
+function saveVolunteer(id){
+  const org = document.getElementById('vOrg').value.trim();
+  if(!org){ toast("Organization is required"); return; }
+  const obj = id ? DATA.volunteer.find(v=>v.id===id) : {id:uid()};
+  obj.organization = org;
+  obj.date = document.getElementById('vDate').value;
+  obj.hours = document.getElementById('vHours').value;
+  obj.supervisor = document.getElementById('vSup').value.trim();
+  obj.contact = document.getElementById('vContact').value.trim();
+  obj.proof = document.getElementById('vProof').value.trim();
+  obj.notes = document.getElementById('vNotes').value.trim();
+  if(!id) DATA.volunteer.push(obj);
+  saveData(); closeOverlay(); toast("Volunteer hours saved");
+  renderPage(currentPage);
+}
+
+/* ============================================================
+   PROJECTS
+   ============================================================ */
+function pageProjects(){
+  const items = DATA.projects;
+  return `
+  <div class="page-head">
+    <div><h1>💡 Projects</h1><p class="sub">${items.length} project${items.length===1?'':'s'} saved</p></div>
+    <div class="page-actions"><button class="btn btn-primary btn-sm" onclick="openProjectModal()">+ Add Project</button></div>
+  </div>
+  <div class="card-list" id="list-projects">${renderProjectsList(items)}</div>`;
+}
+function renderProjectsList(items){
+  if(!items.length) return emptyState('💡','No projects yet','Save your coding projects, research, businesses, or creative work here.');
+  return [...items].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).map(p=>`
+    <div class="item-card">
+      <div class="item-ic">💡</div>
+      <div class="item-body">
+        <h4>${escapeHtml(p.title)}</h4>
+        <div class="item-meta">
+          <span>${fmtDate(p.date)}</span>
+          ${(p.skills||'').split(',').filter(Boolean).map(s=>`<span class="tag">${escapeHtml(s.trim())}</span>`).join('')}
+          ${p.github?`<a href="${escapeHtml(p.github)}" target="_blank" class="badge badge-gray">GitHub ↗</a>`:''}
+          ${p.website?`<a href="${escapeHtml(p.website)}" target="_blank" class="badge badge-gray">Website ↗</a>`:''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-icon" onclick="openProjectModal('${p.id}')">✎</button>
+        <button class="btn-icon" onclick="deleteItem('projects','${p.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function openProjectModal(id){
+  const existing = id ? DATA.projects.find(p=>p.id===id) : null;
+  const p = existing || {};
+  showOverlay(`
+  <div class="modal modal-lg modal-wrap">
+    <button class="modal-close" onclick="closeOverlay()">✕</button>
+    <h3>${existing?'Edit':'Add'} Project</h3>
+    <div class="field"><label>Title</label><input id="pTitle" value="${escapeHtml(p.title||'')}"></div>
+    <div class="field"><label>Description</label><textarea id="pDesc">${escapeHtml(p.description||'')}</textarea></div>
+    <div class="field"><label>Skills used (comma separated)</label><input id="pSkills" value="${escapeHtml(p.skills||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>GitHub link</label><input id="pGithub" value="${escapeHtml(p.github||'')}"></div>
+      <div class="field"><label>Website link</label><input id="pWebsite" value="${escapeHtml(p.website||'')}"></div>
+    </div>
+    <div class="field"><label>Completion date</label><input id="pDate" type="date" value="${p.date||''}"></div>
+    <div class="modal-actions">
+      ${existing?`<button class="btn btn-danger-text" onclick="deleteItem('projects','${id}');closeOverlay();">Delete</button>`:''}
+      <button class="btn btn-primary" onclick="saveProject('${existing?existing.id:''}')">Save Project</button>
+    </div>
+  </div>`);
+}
+function saveProject(id){
+  const title = document.getElementById('pTitle').value.trim();
+  if(!title){ toast("Title is required"); return; }
+  const obj = id ? DATA.projects.find(p=>p.id===id) : {id:uid()};
+  obj.title = title;
+  obj.description = document.getElementById('pDesc').value.trim();
+  obj.skills = document.getElementById('pSkills').value.trim();
+  obj.github = document.getElementById('pGithub').value.trim();
+  obj.website = document.getElementById('pWebsite').value.trim();
+  obj.date = document.getElementById('pDate').value;
+  if(!id) DATA.projects.push(obj);
+  saveData(); closeOverlay(); toast("Project saved");
+  renderPage(currentPage);
+}
+
+/* ============================================================
+   GOALS
+   ============================================================ */
+function pageGoals(){
+  const items = DATA.goals;
+  return `
+  <div class="page-head">
+    <div><h1>🎯 Goals</h1><p class="sub">${items.filter(g=>g.status!=='Completed').length} active goal${items.length===1?'':'s'}</p></div>
+    <div class="page-actions"><button class="btn btn-primary btn-sm" onclick="openItemModal('goals')">+ Add Goal</button></div>
+  </div>
+  <div class="card-list" id="list-goals">${renderGoalsList(items)}</div>`;
+}
+const GOAL_FIELDS_HELP = null;
+function renderGoalsList(items){
+  if(!items.length) return emptyState('🎯','No goals set yet','Set an academic or personal goal and track your progress toward it.');
+  const statusBadge = s=> s==='Completed' ? 'badge-green' : s==='In progress' ? 'badge-blue' : 'badge-gray';
+  return [...items].sort((a,b)=>new Date(a.deadline||0)-new Date(b.deadline||0)).map(g=>`
+    <div class="item-card">
+      <div class="item-ic">🎯</div>
+      <div class="item-body">
+        <h4>${escapeHtml(g.title)}</h4>
+        <div class="item-meta">
+          <span class="badge ${statusBadge(g.status)}">${g.status||'Not started'}</span>
+          ${g.priority?`<span class="badge badge-amber">${g.priority} priority</span>`:''}
+          ${g.deadline?`<span>Due ${fmtDate(g.deadline)}</span>`:''}
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${g.progress||0}%"></div></div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-icon" onclick="openItemModal('goals','${g.id}')">✎</button>
+        <button class="btn-icon" onclick="deleteItem('goals','${g.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+FIELD_DEFS.goals = {
+  title:"Goals", icon:"🎯", singular:"Goal", categories:[],
+  fields:[
+    {key:'title', label:'Title', type:'text', required:true},
+    {key:'description', label:'Description', type:'textarea'},
+    {key:'deadline', label:'Deadline', type:'date'},
+    {key:'progress', label:'Progress (0–100)', type:'number'},
+    {key:'priority', label:'Priority level', type:'select', options:['Low','Medium','High']},
+    {key:'status', label:'Status', type:'select', options:['Not started','In progress','Completed']},
+  ]
+};
+function renderCollectionListOverride(){} // placeholder kept for clarity (goals use custom render via pageGoals)
+
+/* ============================================================
+   UNIVERSITY TRACKER
+   ============================================================ */
+function pageUniversities(){
+  const items = DATA.universities;
+  return `
+  <div class="page-head">
+    <div><h1>🎓 University Tracker</h1><p class="sub">${items.length} application${items.length===1?'':'s'} tracked</p></div>
+    <div class="page-actions"><button class="btn btn-primary btn-sm" onclick="openUniModal()">+ Add University</button></div>
+  </div>
+  <div class="card-list" id="list-universities">${renderUniList(items)}</div>`;
+}
+function statusColor(status){
+  return {Researching:'badge-gray',Applying:'badge-blue',Submitted:'badge-purple',Accepted:'badge-green',Waitlisted:'badge-amber',Rejected:'badge-red'}[status] || 'badge-gray';
+}
+function renderUniList(items){
+  if(!items.length) return emptyState('🎓','No universities yet','Add a school to start tracking deadlines, essays, and status.');
+  return [...items].sort((a,b)=>new Date(a.deadline||0)-new Date(b.deadline||0)).map(u=>`
+    <div class="item-card">
+      <div class="item-ic">🎓</div>
+      <div class="item-body">
+        <h4>${escapeHtml(u.name)}</h4>
+        <div class="item-meta">
+          <span class="badge ${statusColor(u.status)}">${u.status||'Researching'}</span>
+          ${u.program?`<span>${escapeHtml(u.program)}</span>`:''}
+          ${u.deadline?`<span>Due ${fmtDate(u.deadline)}</span>`:''}
+          ${u.requiredAverage?`<span>Req. avg: ${escapeHtml(u.requiredAverage)}%</span>`:''}
+          ${u.essays?`<span class="tag">Essays: ${escapeHtml(u.essays)}</span>`:''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-icon" onclick="openUniModal('${u.id}')">✎</button>
+        <button class="btn-icon" onclick="deleteItem('universities','${u.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function openUniModal(id){
+  const existing = id ? DATA.universities.find(u=>u.id===id) : null;
+  const u = existing || {};
+  const statuses = ['Researching','Applying','Submitted','Accepted','Waitlisted','Rejected'];
+  showOverlay(`
+  <div class="modal modal-lg modal-wrap">
+    <button class="modal-close" onclick="closeOverlay()">✕</button>
+    <h3>${existing?'Edit':'Add'} University</h3>
+    <div class="field"><label>University name</label><input id="uName" value="${escapeHtml(u.name||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Program</label><input id="uProgram" value="${escapeHtml(u.program||'')}"></div>
+      <div class="field"><label>Deadline</label><input id="uDeadline" type="date" value="${u.deadline||''}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Required average (%)</label><input id="uAvg" type="number" value="${escapeHtml(u.requiredAverage||'')}"></div>
+      <div class="field"><label>Application status</label><select id="uStatus">${statuses.map(s=>`<option ${s===u.status?'selected':''}>${s}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Essays checklist</label><input id="uEssays" placeholder="e.g. 2 of 3 complete" value="${escapeHtml(u.essays||'')}"></div>
+    <div class="field"><label>Recommendation letters</label><input id="uLetters" placeholder="e.g. Requested from Mr. Smith" value="${escapeHtml(u.letters||'')}"></div>
+    <div class="field"><label>Notes</label><textarea id="uNotes">${escapeHtml(u.notes||'')}</textarea></div>
+    <div class="modal-actions">
+      ${existing?`<button class="btn btn-danger-text" onclick="deleteItem('universities','${id}');closeOverlay();">Delete</button>`:''}
+      <button class="btn btn-primary" onclick="saveUni('${existing?existing.id:''}')">Save University</button>
+    </div>
+  </div>`);
+}
+function saveUni(id){
+  const name = document.getElementById('uName').value.trim();
+  if(!name){ toast("University name is required"); return; }
+  const obj = id ? DATA.universities.find(u=>u.id===id) : {id:uid()};
+  obj.name = name;
+  obj.program = document.getElementById('uProgram').value.trim();
+  obj.deadline = document.getElementById('uDeadline').value;
+  obj.requiredAverage = document.getElementById('uAvg').value;
+  obj.status = document.getElementById('uStatus').value;
+  obj.essays = document.getElementById('uEssays').value.trim();
+  obj.letters = document.getElementById('uLetters').value.trim();
+  obj.notes = document.getElementById('uNotes').value.trim();
+  if(!id) DATA.universities.push(obj);
+  saveData(); closeOverlay(); toast("University saved");
+  renderPage(currentPage);
+}
+
+/* ============================================================
+   SCHOLARSHIP TRACKER
+   ============================================================ */
+function pageScholarships(){
+  const items = DATA.scholarships;
+  const totalAmt = items.reduce((s,x)=>s+(parseFloat(x.amount)||0),0);
+  return `
+  <div class="page-head">
+    <div><h1>💰 Scholarship Tracker</h1><p class="sub">${items.length} tracked · $${totalAmt.toLocaleString()} potential value</p></div>
+    <div class="page-actions"><button class="btn btn-primary btn-sm" onclick="openScholarModal()">+ Add Scholarship</button></div>
+  </div>
+  <div class="card-list" id="list-scholarships">${renderScholarList(items)}</div>`;
+}
+function resultColor(r){
+  return {Won:'badge-green',Pending:'badge-amber',Declined:'badge-red'}[r] || 'badge-gray';
+}
+function renderScholarList(items){
+  if(!items.length) return emptyState('💰','No scholarships yet','Track every scholarship deadline and submission in one place.');
+  return [...items].sort((a,b)=>new Date(a.deadline||0)-new Date(b.deadline||0)).map(s=>`
+    <div class="item-card">
+      <div class="item-ic">💰</div>
+      <div class="item-body">
+        <h4>${escapeHtml(s.name)}</h4>
+        <div class="item-meta">
+          ${s.amount?`<span class="badge badge-purple">$${Number(s.amount).toLocaleString()}</span>`:''}
+          ${s.deadline?`<span>Due ${fmtDate(s.deadline)}</span>`:''}
+          ${s.essayStatus?`<span class="tag">Essay: ${escapeHtml(s.essayStatus)}</span>`:''}
+          ${s.submissionStatus?`<span class="tag">${escapeHtml(s.submissionStatus)}</span>`:''}
+          ${s.result?`<span class="badge ${resultColor(s.result)}">${s.result}</span>`:''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-icon" onclick="openScholarModal('${s.id}')">✎</button>
+        <button class="btn-icon" onclick="deleteItem('scholarships','${s.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function openScholarModal(id){
+  const existing = id ? DATA.scholarships.find(s=>s.id===id) : null;
+  const s = existing || {};
+  showOverlay(`
+  <div class="modal modal-lg modal-wrap">
+    <button class="modal-close" onclick="closeOverlay()">✕</button>
+    <h3>${existing?'Edit':'Add'} Scholarship</h3>
+    <div class="field"><label>Name</label><input id="sName" value="${escapeHtml(s.name||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Amount ($)</label><input id="sAmount" type="number" value="${escapeHtml(s.amount||'')}"></div>
+      <div class="field"><label>Deadline</label><input id="sDeadline" type="date" value="${s.deadline||''}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Essay status</label><select id="sEssay">${['Not started','In progress','Complete'].map(o=>`<option ${o===s.essayStatus?'selected':''}>${o}</option>`).join('')}</select></div>
+      <div class="field"><label>Submission status</label><select id="sSubmit">${['Not submitted','Submitted'].map(o=>`<option ${o===s.submissionStatus?'selected':''}>${o}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Result</label><select id="sResult">${['Pending','Won','Declined'].map(o=>`<option ${o===s.result?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="field"><label>Notes</label><textarea id="sNotes">${escapeHtml(s.notes||'')}</textarea></div>
+    <div class="modal-actions">
+      ${existing?`<button class="btn btn-danger-text" onclick="deleteItem('scholarships','${id}');closeOverlay();">Delete</button>`:''}
+      <button class="btn btn-primary" onclick="saveScholar('${existing?existing.id:''}')">Save Scholarship</button>
+    </div>
+  </div>`);
+}
+function saveScholar(id){
+  const name = document.getElementById('sName').value.trim();
+  if(!name){ toast("Scholarship name is required"); return; }
+  const obj = id ? DATA.scholarships.find(s=>s.id===id) : {id:uid()};
+  obj.name = name;
+  obj.amount = document.getElementById('sAmount').value;
+  obj.deadline = document.getElementById('sDeadline').value;
+  obj.essayStatus = document.getElementById('sEssay').value;
+  obj.submissionStatus = document.getElementById('sSubmit').value;
+  obj.result = document.getElementById('sResult').value;
+  obj.notes = document.getElementById('sNotes').value.trim();
+  if(!id) DATA.scholarships.push(obj);
+  saveData(); closeOverlay(); toast("Scholarship saved");
+  renderPage(currentPage);
+}
+
+/* ============================================================
+   RESUME BUILDER
+   ============================================================ */
+let resumeTemplate = 'modern';
+function pageResume(){
+  return `
+  <div class="page-head">
+    <div><h1>📄 Resume Builder</h1><p class="sub">Auto-generated from your achievements, projects, and activities.</p></div>
+    <div class="page-actions"><button class="btn btn-primary btn-sm" onclick="window.print()">⬇ Export to PDF</button></div>
+  </div>
+  <div class="resume-wrap">
+    <div class="panel">
+      <h3>Template</h3>
+      <div class="card-list">
+        <div class="item-card" style="cursor:pointer" onclick="setResumeTemplate('modern')">
+          <div class="item-ic">🎨</div><div class="item-body"><h4>Modern</h4><p style="font-size:12px;">Clean sans-serif with gradient headers</p></div>
+        </div>
+        <div class="item-card" style="cursor:pointer" onclick="setResumeTemplate('classic')">
+          <div class="item-ic">📜</div><div class="item-body"><h4>Classic</h4><p style="font-size:12px;">Traditional serif resume style</p></div>
+        </div>
+      </div>
+      <p style="font-size:11.5px;margin-top:14px;">Tip: Update your profile in Settings to change the name and contact info shown here.</p>
+    </div>
+    <div id="print-area">
+      ${renderResumePaper()}
+    </div>
+  </div>`;
+}
+function setResumeTemplate(t){
+  resumeTemplate = t;
+  document.getElementById('print-area').innerHTML = renderResumePaper();
+}
+function renderResumePaper(){
+  const p = DATA.profile;
+  const cls = resumeTemplate === 'classic' ? 'classic' : '';
+  const achievements = DATA.achievements.slice(0,8);
+  const extras = DATA.extracurriculars.slice(0,8);
+  const projects = DATA.projects.slice(0,6);
+  const volunteer = DATA.volunteer;
+  const section = (title, rows)=> rows.length ? `
+    <div class="r-section"><h3>${title}</h3>${rows}</div>` : '';
+
+  const achRows = achievements.map(a=>`
+    <div class="r-entry"><div class="r-entry-top">${escapeHtml(a.title)}<span>${fmtDate(a.date)}</span></div>
+    <p>${escapeHtml(a.organization||'')}${a.organization&&a.description?' — ':''}${escapeHtml(a.description||'')}</p></div>`).join('');
+  const extraRows = extras.map(e=>`
+    <div class="r-entry"><div class="r-entry-top">${escapeHtml(e.title)}${e.role?' — '+escapeHtml(e.role):''}<span>${fmtDate(e.date)}</span></div>
+    <p>${escapeHtml(e.description||'')}</p></div>`).join('');
+  const projRows = projects.map(pr=>`
+    <div class="r-entry"><div class="r-entry-top">${escapeHtml(pr.title)}<span>${fmtDate(pr.date)}</span></div>
+    <p>${escapeHtml(pr.description||'')}${pr.skills?' · Skills: '+escapeHtml(pr.skills):''}</p></div>`).join('');
+  const volTotal = totalVolunteerHours();
+  const volRows = volunteer.length ? `
+    <div class="r-entry"><div class="r-entry-top">Total community service<span>${volTotal} hours</span></div>
+    <p>${volunteer.slice(0,5).map(v=>escapeHtml(v.organization)).filter(Boolean).join(', ')}</p></div>` : '';
+
+  return `
+  <div class="resume-paper ${cls}">
+    <h1>${escapeHtml(p.name || 'Your Name')}</h1>
+    <div class="r-role">${escapeHtml(p.grade||'Grade 9')} Student</div>
+    <div class="r-contact">${p.email?`<span>✉ ${escapeHtml(p.email)}</span>`:''}</div>
+    ${section('Achievements & Awards', achRows)}
+    ${section('Extracurricular Activities', extraRows)}
+    ${section('Projects', projRows)}
+    ${section('Volunteer Experience', volRows)}
+    ${(!achRows && !extraRows && !projRows && !volRows) ? '<p style="margin-top:20px;color:#9a9aa5;font-size:13px;">Add achievements, projects, and activities to see them appear here automatically.</p>' : ''}
+  </div>`;
+}
+
+/* ============================================================
+   TIMELINE
+   ============================================================ */
+function pageTimeline(){
+  const events = [];
+  DATA.achievements.forEach(a=>events.push({date:a.date, title:a.title, ic:'🏆', sub:'Achievement'}));
+  DATA.extracurriculars.forEach(e=>events.push({date:e.date, title:`Joined ${e.title}`, ic:'🎽', sub:'Extracurricular'}));
+  DATA.volunteer.forEach(v=>events.push({date:v.date, title:`Volunteered at ${v.organization} (${v.hours||0} hrs)`, ic:'🤝', sub:'Volunteer'}));
+  DATA.projects.forEach(p=>events.push({date:p.date, title:`Built ${p.title}`, ic:'💡', sub:'Project'}));
+  DATA.goals.filter(g=>g.status==='Completed').forEach(g=>events.push({date:g.deadline, title:`Completed goal: ${g.title}`, ic:'🎯', sub:'Goal'}));
+  DATA.universities.filter(u=>u.status==='Accepted').forEach(u=>events.push({date:u.deadline, title:`Accepted into ${u.name}`, ic:'🎓', sub:'University'}));
+  DATA.scholarships.filter(s=>s.result==='Won').forEach(s=>events.push({date:s.deadline, title:`Won ${s.name}`, ic:'💰', sub:'Scholarship'}));
+
+  const valid = events.filter(e=>e.date);
+  if(!valid.length){
+    return `<div class="page-head"><div><h1>🗓️ Timeline</h1><p class="sub">Your milestones from Grade 9 onward.</p></div></div>
+    ${emptyState('🗓️','No dated entries yet','Add dates to your achievements, projects, and activities to see your timeline come to life.')}`;
+  }
+  valid.sort((a,b)=> new Date(b.date) - new Date(a.date));
+  const byYear = {};
+  valid.forEach(e=>{ const y = yearOf(e.date); (byYear[y]=byYear[y]||[]).push(e); });
+  const years = Object.keys(byYear).sort((a,b)=>b-a);
+  const html = years.map(y=>`
+    <div class="timeline-year">${y}</div>
+    ${byYear[y].map(e=>`
+      <div class="timeline-item">
+        <span class="ic">${e.ic}</span>
+        <div><h4>${escapeHtml(e.title)}</h4><span>${e.sub} · ${fmtDate(e.date)}</span></div>
+      </div>`).join('')}
+  `).join('');
+
+  return `
+  <div class="page-head"><div><h1>🗓️ Timeline</h1><p class="sub">Every milestone, chronologically, from Grade 9 onward.</p></div></div>
+  <div class="timeline">${html}</div>`;
+}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+function pageSettings(){
+  const p = DATA.profile;
+  return `
+  <div class="page-head"><div><h1>⚙️ Settings</h1><p class="sub">Manage your profile and preferences.</p></div></div>
+  <div class="panel" style="max-width:560px;">
+    <h3>Profile</h3>
+    <div class="field"><label>Full name</label><input id="setName" value="${escapeHtml(p.name||'')}"></div>
+    <div class="field"><label>Email</label><input id="setEmail" value="${escapeHtml(p.email||'')}"></div>
+    <div class="field"><label>Grade</label>
+      <select id="setGrade">${['Grade 9','Grade 10','Grade 11','Grade 12'].map(g=>`<option ${g===p.grade?'selected':''}>${g}</option>`).join('')}</select>
+    </div>
+    <div class="field"><label>Profile picture URL</label><input id="setPhoto" value="${escapeHtml(p.photo||'')}" placeholder="https://..."></div>
+    <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save Profile</button>
+  </div>
+  <div class="panel" style="max-width:560px;margin-top:16px;">
+    <div class="settings-row">
+      <div><h4>Dark mode</h4><p>Switch between light and dark appearance.</p></div>
+      <div class="toggle ${p.theme==='dark'?'on':''}" onclick="toggleTheme()"></div>
+    </div>
+    <div class="settings-row">
+      <div><h4>Export all data</h4><p>Download a JSON backup of your entire portfolio.</p></div>
+      <button class="btn btn-ghost btn-sm" onclick="exportData()">Export</button>
+    </div>
+    <div class="settings-row">
+      <div><h4>Delete account</h4><p>Permanently erase all locally stored data.</p></div>
+      <button class="btn btn-sm" style="background:rgba(224,71,63,.1);color:var(--danger);border-radius:10px;" onclick="deleteAccount()">Delete</button>
+    </div>
+  </div>`;
+}
+function saveProfile(){
+  DATA.profile.name = document.getElementById('setName').value.trim();
+  DATA.profile.email = document.getElementById('setEmail').value.trim();
+  DATA.profile.grade = document.getElementById('setGrade').value;
+  DATA.profile.photo = document.getElementById('setPhoto').value.trim();
+  saveData();
+  updateSideProfile();
+  toast("Profile updated");
+}
+function exportData(){
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'futurefile-export.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Data exported");
+}
+function deleteAccount(){
+  if(!confirm("This will permanently delete all your FutureFile data from this browser. Continue?")) return;
+  localStorage.removeItem(STORE_KEY);
+  DATA = defaultData();
+  logOut();
+  toast("Account deleted");
+}
+
+/* ---------- CONTACT (inside app) ---------- */
+function pageContactApp(){
+  return `
+  <div class="page-head"><div><h1>✉️ Contact</h1><p class="sub">Have questions, feedback, or suggestions? I'd love to hear from you.</p></div></div>
+  <div class="contact-card" style="max-width:480px;">
+    <div class="contact-row"><span class="ic">👤</span><div><div style="font-size:12px;color:var(--text-faint);">Name</div><div style="font-weight:600;font-size:14.5px;">Zoya Younas</div></div></div>
+    <div class="contact-row"><span class="ic">✉️</span><div><div style="font-size:12px;color:var(--text-faint);">Email</div><a href="mailto:zoyayounas06@gmail.com" style="font-weight:600;">zoyayounas06@gmail.com</a></div></div>
+  </div>`;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(function init(){
+  if(DATA && DATA.profile && DATA.profile.name){
+    applyTheme();
+  }
+})();
+</script>
+</body>
+</html>
